@@ -35,7 +35,7 @@ class DatabasePackManager(private val context: Context) {
 
     companion object {
         const val ASSET_GZ_PATH = "db/shafii_encyclopedia.db.gz"
-        const val ACTIVE_DB_NAME = "shafii_encyclopedia_active.db"
+        const val ACTIVE_DB_NAME = "shafii_encyclopedia_active_v2.db"
         const val FALLBACK_MISSING_TEXT = "لم يثبت لدينا نص موثق"
     }
 
@@ -59,7 +59,10 @@ class DatabasePackManager(private val context: Context) {
             }
         }
         if (target.exists()) target.delete()
-        tmp.renameTo(target)
+        if (!tmp.renameTo(target)) {
+            tmp.copyTo(target, overwrite = true)
+            tmp.delete()
+        }
         return target
     }
 

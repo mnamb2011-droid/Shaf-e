@@ -231,15 +231,16 @@ CREATE TABLE IF NOT EXISTS terminology (
     source_note TEXT NOT NULL DEFAULT ''
 );
 
--- 17. FTS5 Full-Text Search Index (Normalized Arabic)
-CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(
-    issue_id UNINDEXED,
+-- 17. FTS4 Full-Text Search Index (100% native on stock Android SQLite)
+CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts4(
+    issue_id,
     title_norm,
     body_norm,
     scholars_norm,
     references_norm,
     keywords_norm,
-    tokenize = 'unicode61 remove_diacritics 2'
+    notindexed=issue_id,
+    tokenize=unicode61
 );
 
 -- Performance Indexes

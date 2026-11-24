@@ -102,18 +102,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun refreshAllEncyclopediaData() {
         viewModelScope.launch {
-            _integrityReport.value = repo.runIntegrityCheck()
-            _metadata.value = repo.getMetadata()
-            _books.value = repo.getBooks()
-            val issues = repo.getAllIssues()
-            _allIssues.value = issues
-            _searchResults.value = issues
-            _scholars.value = repo.getScholars()
-            _references.value = repo.getReferences()
-            _terminology.value = repo.getTerminology()
-            _chaptersByBook.value = emptyMap()
-            if (issues.isNotEmpty() && _comparisonIssue.value == null) {
-                _comparisonIssue.value = repo.getIssueDetail(issues.first().id)
+            try {
+                _integrityReport.value = repo.runIntegrityCheck()
+                _metadata.value = repo.getMetadata()
+                _books.value = repo.getBooks()
+                val issues = repo.getAllIssues()
+                _allIssues.value = issues
+                _searchResults.value = issues
+                _scholars.value = repo.getScholars()
+                _references.value = repo.getReferences()
+                _terminology.value = repo.getTerminology()
+                _chaptersByBook.value = emptyMap()
+                if (issues.isNotEmpty() && _comparisonIssue.value == null) {
+                    _comparisonIssue.value = repo.getIssueDetail(issues.first().id)
+                }
+            } catch (e: Exception) {
+                _statusMessage.value = "خطأ أثناء تحميل قاعدة البيانات: ${e.localizedMessage ?: e.javaClass.simpleName}"
             }
         }
     }

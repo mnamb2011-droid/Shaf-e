@@ -149,7 +149,7 @@ class EncyclopediaSqliteStore(private val packManager: DatabasePackManager) {
             JOIN books b ON c.book_id = b.id
             JOIN verification_status vs ON i.verification_status_code = vs.code
             WHERE search_index MATCH ?
-            ORDER BY bm25(search_index) ASC
+            ORDER BY i.id ASC
             LIMIT 50
         """.trimIndent()
 
