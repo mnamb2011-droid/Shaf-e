@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stylized Gold Open Book Emblem -->
+    <path
+        android:fillColor="#D4AF37"
+        android:pathData="M30,36 C38,34 46,35 53,40 L53,72 C46,67 38,66 30,68 Z" />
+    <path
+        android:fillColor="#E7C866"
+        android:pathData="M78,36 C70,34 62,35 55,40 L55,72 C62,67 70,66 78,68 Z" />
+    <path
+        android:fillColor="#FAF6EE"
+        android:pathData="M54,28 L57,33 L54,38 L51,33 Z" />
+</vector>

@@ -1,0 +1,137 @@
+name: Build Shafi'i Fiqh Encyclopedia APK (Flat Repo)
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-verify:
+    name: Assemble Tree, Verify DB, Test & Build APKs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout flat repository
+        uses: actions/checkout@v4
+
+      - name: Assemble Android Studio directory structure from flat root files
+        run: |
+          mkdir -p "gradle/wrapper"
+          mkdir -p "database/migrations"
+          mkdir -p "app/src/main/assets/db"
+          mkdir -p "app/src/main/res/values"
+          mkdir -p "app/src/main/res/xml"
+          mkdir -p "app/src/main/res/mipmap-anydpi-v26"
+          mkdir -p "app/src/main/res/drawable"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/util"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/data/db"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/data/repository"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/ui/theme"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/ui/viewmodel"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/ui/components"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/ui/navigation"
+          mkdir -p "app/src/main/java/com/shafii/encyclopedia/ui/screens"
+          mkdir -p "app/src/test/java/com/shafii/encyclopedia"
+          cp -f "root_build.gradle.kts" "build.gradle.kts"
+          cp -f "gradle-wrapper.properties" "gradle/wrapper/gradle-wrapper.properties"
+          cp -f "app_build.gradle.kts" "app/build.gradle.kts"
+          cp -f "proguard-rules.pro" "app/proguard-rules.pro"
+          cp -f "schema.sql" "database/schema.sql"
+          cp -f "build_database.py" "database/build_database.py"
+          cp -f "verify_database.py" "database/verify_database.py"
+          cp -f "import_pack.py" "database/import_pack.py"
+          cp -f "sample_expansion_pack.json" "database/sample_expansion_pack.json"
+          cp -f "v1_to_v2_template.sql" "database/migrations/v1_to_v2_template.sql"
+          cp -f "shafii_encyclopedia.db.gz" "app/src/main/assets/db/shafii_encyclopedia.db.gz"
+          cp -f "AndroidManifest.xml" "app/src/main/AndroidManifest.xml"
+          cp -f "strings.xml" "app/src/main/res/values/strings.xml"
+          cp -f "themes.xml" "app/src/main/res/values/themes.xml"
+          cp -f "file_paths.xml" "app/src/main/res/xml/file_paths.xml"
+          cp -f "ic_launcher.xml" "app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+          cp -f "ic_launcher_background.xml" "app/src/main/res/drawable/ic_launcher_background.xml"
+          cp -f "ic_launcher_foreground.xml" "app/src/main/res/drawable/ic_launcher_foreground.xml"
+          cp -f "ShafiiApp.kt" "app/src/main/java/com/shafii/encyclopedia/ShafiiApp.kt"
+          cp -f "MainActivity.kt" "app/src/main/java/com/shafii/encyclopedia/MainActivity.kt"
+          cp -f "ArabicNormalizer.kt" "app/src/main/java/com/shafii/encyclopedia/util/ArabicNormalizer.kt"
+          cp -f "DatabasePackManager.kt" "app/src/main/java/com/shafii/encyclopedia/util/DatabasePackManager.kt"
+          cp -f "IssueExporter.kt" "app/src/main/java/com/shafii/encyclopedia/util/IssueExporter.kt"
+          cp -f "UserDataEntities.kt" "app/src/main/java/com/shafii/encyclopedia/data/db/UserDataEntities.kt"
+          cp -f "UserDataDao.kt" "app/src/main/java/com/shafii/encyclopedia/data/db/UserDataDao.kt"
+          cp -f "UserDataDatabase.kt" "app/src/main/java/com/shafii/encyclopedia/data/db/UserDataDatabase.kt"
+          cp -f "EncyclopediaSqliteStore.kt" "app/src/main/java/com/shafii/encyclopedia/data/db/EncyclopediaSqliteStore.kt"
+          cp -f "EncyclopediaRepository.kt" "app/src/main/java/com/shafii/encyclopedia/data/repository/EncyclopediaRepository.kt"
+          cp -f "Theme.kt" "app/src/main/java/com/shafii/encyclopedia/ui/theme/Theme.kt"
+          cp -f "MainViewModel.kt" "app/src/main/java/com/shafii/encyclopedia/ui/viewmodel/MainViewModel.kt"
+          cp -f "CommonComponents.kt" "app/src/main/java/com/shafii/encyclopedia/ui/components/CommonComponents.kt"
+          cp -f "AppNavigation.kt" "app/src/main/java/com/shafii/encyclopedia/ui/navigation/AppNavigation.kt"
+          cp -f "HomeScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/HomeScreen.kt"
+          cp -f "BooksScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/BooksScreen.kt"
+          cp -f "SearchScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/SearchScreen.kt"
+          cp -f "IssueDetailScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/IssueDetailScreen.kt"
+          cp -f "ComparisonScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/ComparisonScreen.kt"
+          cp -f "ScholarsScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/ScholarsScreen.kt"
+          cp -f "LibraryScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/LibraryScreen.kt"
+          cp -f "FavoritesNotesScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/FavoritesNotesScreen.kt"
+          cp -f "SettingsScreen.kt" "app/src/main/java/com/shafii/encyclopedia/ui/screens/SettingsScreen.kt"
+          cp -f "ArabicNormalizerTest.kt" "app/src/test/java/com/shafii/encyclopedia/ArabicNormalizerTest.kt"
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Rebuild & Verify Offline SQLite Database (FTS5 + FK + Policy)
+        run: |
+          python3 database/build_database.py
+          python3 database/verify_database.py database/shafii_encyclopedia.db
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Setup Gradle 8.10.2
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Run Kotlin Unit Tests
+        run: gradle testDebugUnitTest --stacktrace
+
+      - name: Build Debug & Release APKs
+        run: gradle assembleDebug assembleRelease --stacktrace
+
+      - name: Report APK & Database Sizes
+        run: |
+          echo "### Build Artifacts Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Artifact | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          DB_RAW=$(stat -c%s database/shafii_encyclopedia.db)
+          DB_GZ=$(stat -c%s database/shafii_encyclopedia.db.gz)
+          APK_DBG=$(stat -c%s app/build/outputs/apk/debug/app-debug.apk)
+          APK_REL=$(stat -c%s app/build/outputs/apk/release/app-release.apk)
+          echo "| Starter SQLite DB (uncompressed) | $(numfmt --to=iec $DB_RAW) ($DB_RAW bytes) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Starter SQLite DB Pack (.db.gz) | $(numfmt --to=iec $DB_GZ) ($DB_GZ bytes) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Debug APK | $(numfmt --to=iec $APK_DBG) ($APK_DBG bytes) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Release APK (R8 shrunk) | $(numfmt --to=iec $APK_REL) ($APK_REL bytes) |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: shafii-encyclopedia-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: shafii-encyclopedia-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+      - name: Upload Standalone Compressed Database Pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: shafii-encyclopedia-db-pack
+          path: database/shafii_encyclopedia.db.gz
