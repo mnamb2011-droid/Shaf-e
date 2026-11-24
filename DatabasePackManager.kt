@@ -72,10 +72,12 @@ class DatabasePackManager(private val context: Context) {
         }
         var db: SQLiteDatabase? = null
         return try {
-            db = SQLiteDatabase.openDatabase(dbFile.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
-            val integrityMsg = db.rawQuery("PRAGMA integrity_check;", null).use { c ->
+            db = SQLiteDatabase.openDatabase(dbFile.absolutePath, null, SQLiteDatabase.OPEN_READWRITE)
+            val integrityMsg = db.rawQuery("PRAGMA quick_check;", null).use { c ->
                 if (c.moveToFirst()) c.getString(0) else "unknown"
             }
+            // Verify FTS4 search index is readable without triggering Android's FTS4 readonly-write bug
+            db.rawQuery("SELECT COUNT(*) FROM search_index;", null).use { c -> c.moveToFirst() }
             val fkErrors = db.rawQuery("PRAGMA foreign_key_check;", null).use { c -> c.count }
             val version = queryMeta(db, "content_version")
             val stage = queryMeta(db, "content_stage")
